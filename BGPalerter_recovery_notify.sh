@@ -31,11 +31,10 @@ fi
 for file in /tmp/bgp_* ; do
     if [ -f $file ]; then
         PREFIX=$(cat $file)
-        VISABILITY=$(/usr/local/bin/ripestat -w routing_status $PREFIX | grep --text -i 'ipv4-visibility' | awk '{print $2}' | cut -d' ' -f12- |tr -d \%)
+        PEER_COUNT=$(curl -s --max-time $TIME https://stat.ripe.net/data/looking-glass/data.json?resource=$PREFIX | jq '.data.rrcs[].peers' | jq '.[].peer' | more | wc -l)
 
-        if [ "$VISABILITY" -ge "99" ]; then
-#            echo $VISABILITY
-            curl -s --max-time 20 -d "chat_id=$TELEGRAM_CHAT_ID&disable_web_page_preview=1&text=$PREFIX announced again" $URL >/dev/null
+        if [ "$PEER_COUNT" -ge "40" ]; then
+            curl -s --max-time $TIME -d "chat_id=$GROUP_ID&disable_web_page_preview=1&text=$PREFIX announced again" $URL >/dev/null
             rm $file
         fi
     fi
