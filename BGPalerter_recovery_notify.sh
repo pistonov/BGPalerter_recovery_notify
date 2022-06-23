@@ -12,7 +12,7 @@ NOW=$(date +%s)
 
 LAST_LOG=$(($NOW - $(date +%s -r $LOG_FILE)))
 
-if [ "$LAST_LOG" -le "65" ]; then
+if [ "$LAST_LOG" -le "121" ]; then
 
     PATERN=$(cat $LOG_FILE | grep "has been withdrawn")
 
@@ -20,7 +20,7 @@ if [ "$LAST_LOG" -le "65" ]; then
         LOG_TIME=$(echo $line | cut -d' ' -f1)
         LOG_TIME=$(date -d$LOG_TIME +'%s')
         LOG_TIME=$(($NOW - $LOG_TIME))
-        if [ "$LOG_TIME" -le "90" ]; then
+        if [ "$LOG_TIME" -le "121" ]; then
             PREFIX_ALERT=$(echo $line | cut -d' ' -f5)
             PREFIX_MASK=$(echo "bgp_"$PREFIX_ALERT | sed -r 's/\//_/g')
             echo $PREFIX_ALERT > /tmp/$PREFIX_MASK
