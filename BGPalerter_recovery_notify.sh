@@ -33,7 +33,7 @@ for file in /tmp/bgp_* ; do
         PREFIX=$(cat $file)
         PEER_COUNT=$(curl -s --max-time $TIME https://stat.ripe.net/data/looking-glass/data.json?resource=$PREFIX | jq '.data.rrcs[].peers' | jq '.[].peer' | wc -l)
 
-        if [ "$PEER_COUNT" -ge "40" ]; then
+        if [ "$PEER_COUNT" -ge "200" ]; then
             curl -s --max-time $TIME -d "chat_id=$GROUP_ID&disable_web_page_preview=1&text=$PREFIX announced again" $URL >/dev/null
             rm $file
         fi
