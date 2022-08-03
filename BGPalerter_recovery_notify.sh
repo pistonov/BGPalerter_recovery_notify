@@ -30,12 +30,16 @@ fi
 
 for file in /tmp/bgp_* ; do
     if [ -f $file ]; then
-        PREFIX=$(cat $file)
-        PEER_COUNT=$(curl -s --max-time $TIME https://stat.ripe.net/data/looking-glass/data.json?resource=$PREFIX | jq '.data.rrcs[].peers' | jq '.[].peer' | wc -l)
+        PREF_FILE_TIME=$(($NOW - $(date +%s -r $file)))
+        if [ "$PREF_FILE_TIME" -ge "600" ]; then
+            PREFIX=$(cat $file)
+            PEER_COUNT_CURL=$(curl -s --max-time $TIME https://stat.ripe.net/data/looking-glass/data.json?resource=$PREFIX)
+            PEER_COUNT=$(echo $PEER_COUNT_CURL | jq '.data.rrcs[].peers' | jq '.[].peer' | wc -l)
 
-        if [ "$PEER_COUNT" -ge "200" ]; then
-            curl -s --max-time $TIME -d "chat_id=$GROUP_ID&disable_web_page_preview=1&text=$PREFIX announced again" $URL >/dev/null
-            rm $file
+            if [ "$PEER_COUNT" -ge "40" ]; then
+                curl -s --max-time $TIME -d "chat_id=$GROUP_ID&disable_web_page_preview=1&text=$PREFIX announced again" $URL >/dev/null
+                rm $file
+            fi
         fi
     fi
 done
