@@ -31,7 +31,7 @@ fi
 for file in /tmp/bgp_* ; do
     if [ -f $file ]; then
         PREF_FILE_TIME=$(($NOW - $(date +%s -r $file)))
-        if [ "$PREF_FILE_TIME" -ge "600" ]; then
+        if [ "$PREF_FILE_TIME" -ge "900" ]; then
             PREFIX=$(cat $file)
             PEER_COUNT_CURL=$(curl -s --max-time $TIME https://stat.ripe.net/data/looking-glass/data.json?resource=$PREFIX)
             PEER_COUNT=$(echo $PEER_COUNT_CURL | jq '.data.rrcs[].peers' | jq '.[].peer' | wc -l)
